@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحه خوش آمدید</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        p {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>سلام خوش آمدید!</h1>
+    <p id="datetime"></p>
+
+    <script>
+        function updateTime() {
+            const date = new Date();
+            const options = {
+                timeZone: 'Asia/Tehran',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+
+            const formatter = new Intl.DateTimeFormat('fa-IR', options);
+            document.getElementById('datetime').innerHTML = formatter.format(date);
+        }
+
+        updateTime();
+        setInterval(updateTime, 1000); // به‌روزرسانی هر ثانیه
+    </script>
+</body>
+</html>

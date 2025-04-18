@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>صفحه خوش آمدید امیدوارم براتون مفید واقع بشه🤗🙏🏻🙌</title>
+    <title>صفحه خوش آمدید</title>
     <link href="https://fonts.googleapis.com/css2?family=Vazir&display=swap" rel="stylesheet">
     <style>
         body {
@@ -19,52 +19,76 @@
             font-size: 24px;
             margin: 10px 0;
         }
+        /* اینجا اعداد داخل تاریخ دیگر جابه‌جا نمی‌شوند */
         .date {
             font-weight: bold;
+            direction: rtl;
+            unicode-bidi: isolate-override;
         }
         .time {
             font-weight: bold;
-            color: #00008B; /* رنگ آبی تیره */
+            color: #00008B;
         }
     </style>
 </head>
 <body>
-    <h1>سلام خوش آمدید!/</h1>
-    <p class="datetime date" id="date"></p>
-    <p class="datetime time" id="time"></p>
+    <h1>سلام، خوش آمدید!</h1>
+
+    <!-- اضافه کردن کلاس date و time -->
+    <p class="datetime date" id="date">در حال بارگذاری...</p>
+    <p class="datetime time" id="time">در حال بارگذاری...</p>
 
     <script>
-        function updateDateTime() {
-            const date = new Date();
-            const optionsDate = {
-                timeZone: 'Asia/Tehran',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            };
+        // گزینه‌های فرمت برای تاریخ و زمان
+        const optionsDate = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        const optionsTime = {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        };
+        const fmtDate = new Intl.DateTimeFormat('fa-IR', {
+            ...optionsDate,
+            timeZone: 'Asia/Tehran'
+        });
+        const fmtTime = new Intl.DateTimeFormat('fa-IR', {
+            ...optionsTime,
+            timeZone: 'Asia/Tehran'
+        });
 
-            const optionsTime = {
-                timeZone: 'Asia/Tehran',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
-            };
+        let currentDate;
 
-            const formatterDate = new Intl.DateTimeFormat('fa-IR', optionsDate);
-            const formatterTime = new Intl.DateTimeFormat('fa-IR', optionsTime);
-            
-            // دریافت تاریخ و زمان
-            const dateString = formatterDate.format(date);
-            const timeString = formatterTime.format(date);
-            
-            // به‌روزرسانی عنصر HTML
-            document.getElementById('date').innerHTML = dateString;
-            document.getElementById('time').innerHTML = timeString;
+        function updateDisplay() {
+            document.getElementById('date').textContent = fmtDate.format(currentDate);
+            document.getElementById('time').textContent = fmtTime.format(currentDate);
         }
 
-        updateDateTime();
-        setInterval(updateDateTime, 1000); // به‌روزرسانی هر ثانیه
+        function startClock() {
+            setInterval(() => {
+                currentDate = new Date(currentDate.getTime() + 1000);
+                updateDisplay();
+            }, 1000);
+        }
+
+        // یک‌بار زدن API برای دریافت زمان دقیق تهران
+        fetch('https://worldtimeapi.org/api/timezone/Asia/Tehran')
+            .then(res => res.json())
+            .then(data => {
+                // رشته‌ی ISO رو می‌گیریم و تبدیل می‌کنیم به Date
+                currentDate = new Date(data.datetime);
+                updateDisplay();
+                startClock();
+            })
+            .catch(err => {
+                console.warn('خطا در دریافت زمان از اینترنت، استفاده از زمان محلی:', err);
+                currentDate = new Date();  // اگر API خراب بود، از زمان محلی استفاده کن
+                updateDisplay();
+                startClock();
+            });
     </script>
 </body>
 </html>
